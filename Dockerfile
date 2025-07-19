@@ -5,7 +5,7 @@ ARG BASE_IMAGE=library/debian:stable-slim
 FROM docker.io/${BASE_IMAGE} AS builder
 
 ARG AIRSANE_REPO=https://github.com/SimulPiscator/AirSane
-ARG AIRSANE_TAG=v0.4.5
+ARG AIRSANE_TAG=v0.4.6
 
 WORKDIR /opt/AirSane
 
@@ -36,7 +36,7 @@ RUN <<-EOT sh
 	# Install runtime dependencies for AirSane and the Epson scanner driver
 	env DEBIAN_FRONTEND=noninteractive \
 		apt-get install -y --no-install-recommends \
-		sane-utils wget \
+		sane-utils wget ca-certificates \
 		libsane libjpeg62-turbo libpng16-16 libavahi-client3 libusb-1.0-0 \
 		-o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
 
@@ -44,6 +44,9 @@ RUN <<-EOT sh
 	wget https://download2.ebz.epson.net/iscan/plugin/gt-x770/deb/x64/iscan-gt-x770-bundle-2.30.4.x64.deb.tar.gz
 	tar zxvf iscan-gt-x770-bundle-2.30.4.x64.deb.tar.gz
 	sh iscan-gt-x770-bundle-2.30.4.x64.deb/install.sh --without-network --without-ocr-engine
+
+	# Configure SANE to only use the network backend by commenting out all other backends
+	sed -i '/^#/!{/^net$/!s/^/#/}' /etc/sane.d/dll.conf
 
 	# Clean up downloaded files and apt cache
 	rm -rf iscan-gt-x770-bundle-2.30.4.x64.deb.tar.gz iscan-gt-x770-bundle-2.30.4.x64.deb
@@ -62,11 +65,10 @@ RUN sed -i '$a allow 192.168.1.0/24' /etc/airsane/access.conf
 
 EXPOSE 8090/tcp
 
-VOLUME /dev/bus/usb /run/dbus 
+VOLUME /dev/bus/usb /run/dbus /opt/drivers
 
 HEALTHCHECK --interval=1m --timeout=3s \
   CMD timeout 2 bash -c 'cat < /dev/null > /dev/tcp/127.0.0.1/8090'
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["--access-log=-", "--disclose-version=false", "--debug=true"]
-```
