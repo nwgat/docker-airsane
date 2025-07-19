@@ -34,12 +34,12 @@ Instead of pulling the image from a remote repository, you can build it locally:
 
 1. Clone the repository:
 
-       git clone https://github.com/aguslr/docker-airsane.git
+       git clone https://github.com/nwgat/docker-airsane-v500.git
 
 2. Change into the newly created directory and use `docker-compose` to build and
    launch the container:
 
-       cd docker-airsane && docker-compose up --build -d
+       cd docker-airsane-v500 && docker-compose up --build -d
 
 
 [1]: https://github.com/aguslr/docker-airsane
