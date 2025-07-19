@@ -1,4 +1,4 @@
-[aguslr/docker-airsane][1]
+[aguslr/docker-airsane][1] for Epson V500 Scanner
 ==========================
 
 [![docker-pulls](https://img.shields.io/docker/pulls/aguslr/airsane)](https://hub.docker.com/r/aguslr/airsane) [![image-size](https://img.shields.io/docker/image-size/aguslr/airsane/latest)](https://hub.docker.com/r/aguslr/airsane)
